@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+PATH="/usr/local/bin:$PATH"
+trap 'rm -f "/tmp/tags.$$"' EXIT
+git ls-files | \
+  ctags -L - -f"/tmp/tags.$$"
+mv "/tmp/tags.$$" "tags"
+

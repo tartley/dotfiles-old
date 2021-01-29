@@ -1,0 +1,11 @@
+# hgignore for home dir dotfiles repo
+# patterns are tested against basenames, so these files are ignored in all dirs
+
+syntax: glob
+*.orig
+*.pyc
+.netrwhist
+.vba
+backup*
+generate_symlinks
+

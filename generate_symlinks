@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+# Symlink all dotfiles from within 'home' to $HOME.
+# Any existing files in home dir with clashing names are backed up.
+# Also symlink a few special-cased files from 'other' into other locations.
+
+# stop on error
+set -e
+
+function generate_home_links {
+    SCRIPT=$(basename $0)
+    SOURCE="home"
+    TARGET=$HOME
+    BACKUP_PREFIX="backup-$SCRIPT"
+    BACKUP=./$BACKUP_PREFIX/backup-`date +%Y%m%d-%H%M%S0`
+    LINKNAME="$(basename $(pwd))"
+
+    SAVEIFS=$IFS
+    IFS=$(echo -en "\n\b")
+    ls -A "$SOURCE" | while read filename; do
+
+        # if file already exists and is a symlink, delete it
+        if [ -h "$TARGET/$filename" ] ; then
+            rm -f "$TARGET/$filename"
+        fi
+
+        # if file already exists, move from target dir to backup dir
+        if [ -e "$TARGET/$filename" ] ; then
+            mkdir -p $BACKUP
+            mv "$TARGET/$filename" $BACKUP
+            echo -n "b "
+        else
+            echo -n "  "
+        fi
+
+        # symlink file from target dir to the user's home dir
+        if [ ! -e "../$filename" ] ; then
+            (cd ~ ; ln -s "$LINKNAME/$SOURCE/$filename" . )
+            echo -n "ok "
+        else
+            echo -n "   "
+        fi
+
+        echo "$filename"
+
+    done
+    IFS="$SAVEIFS"
+
+    echo
+    echo "'b' = backed-up to $BACKUP"
+}
+
+function symlink_dot_dir {
+    src="$1"  # eg. other/.config/bat
+    dest="$2" # eg. ~/.config/bat
+
+    if [ ! -e "$dest" ] ; then
+        echo "Linking $dest"
+        ln -fs $(readlink -f "$src") "$dest"
+    else
+        # TODO: If it's a link, no warning
+        # If it's a directory, loud warning
+        # See how we handle 'home', above
+        echo "already exists: $dest"
+    fi
+
+}
+
+function main {
+    generate_home_links
+
+    # and each of the files/dirs in 'other'
+    mkdir -p ~/.config
+    symlink_dot_dir "other/bin" "$HOME/bin"
+    # Not sure why this one is in 'other' and not 'home'
+    # Is it because it is a directory instead of a file?
+    symlink_dot_dir "other/.bazaar" "$HOME/.bazaar"
+    symlink_dot_dir "other/.config/bat" "$HOME/.config/bat"
+    symlink_dot_dir "other/.config/nvim" "$HOME/.config/nvim"
+    symlink_dot_dir "other/.config/conky" "$HOME/.config/conky"
+}
+
+main
+

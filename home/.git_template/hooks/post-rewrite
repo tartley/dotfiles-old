@@ -1,0 +1,7 @@
+#!/bin/sh
+# This gets fired by "commit --amend" and "rebase". The former is already
+# handled by post-commit, so just handle the latter:
+case "$1" in
+  rebase) exec .git/hooks/post-merge ;;
+esac
+

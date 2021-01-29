@@ -1,0 +1,56 @@
+; User specific Mercurial config file.
+; See the hgrc man page for details.
+
+[ui]
+username = Jonathan Hartley <tartley@tartley.com>
+editor = vim
+ignore = ~/.hgignore
+ssh = ssh -C
+style = compact
+merge = internal:merge
+
+[auth]
+default.prefix = *
+default.username = tartley
+
+[extensions]
+color=
+graphlog=
+mq=
+prompt=~/docs/config/hg-prompt/prompt.py
+record=
+shelve=
+
+[color]
+status.added = green bold
+status.modified = yellow bold
+status.unknown = magenta
+status.deleted = red_background white underline
+# status.removed = 
+# status.ignored = 
+# status.clean = 
+# status.copied = 
+
+diff.normal = blue
+diff.diffline = white_background black
+diff.extended = magenta bold
+diff.file_a = yellow
+diff.file_b = yellow
+diff.hunk = white bold underline
+diff.deleted = red bold
+diff.inserted = green bold
+diff.changed = blue bold
+diff.trailingwhitespace = red_background
+
+[hooks]
+# commit.autopush = hg push
+
+[tortoisehg]
+editor = gvim
+postpull = update
+# pushafterci = True
+tabwidth = 4
+
+[hostfingerprints]
+bitbucket.org = 46:de:34:e7:9b:18:cd:7f:ae:fd:8b:e3:bc:f4:1a:5e:38:d7:ac:24
+
