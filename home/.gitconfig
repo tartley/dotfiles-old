@@ -54,6 +54,18 @@
     trustctime = false
     attributesfile = /home/jhartley/.gitattributes
 
+# Recommented by @glyph. TBH I don't understand why.
+[protocol "http"]
+    allow = never
+[protocol "git"]
+    allow = never
+[fetch]
+    fsckObjects = true
+[transfer]
+    fsckObjects = true
+[receive]
+    fsckObjects = true
+
 [push]
     default = current
 
