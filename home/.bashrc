@@ -408,8 +408,7 @@ laliases[snaprevs]=siab-xenial
 laliases[storage]=snapstorage-xenial
 laliases[snapstorage]=snapstorage-xenial
 # charm-migration
-laliases[charm]=charm-migration-bionic
-laliases[charm-migration]=charm-migration-bionic
+laliases[charm-migration]=charm-migration-focal
 
 # Given a project name or container alias,
 # return the actual hosting container name.
