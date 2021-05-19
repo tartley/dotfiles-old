@@ -676,8 +676,32 @@ fun! MatchCaseTag()
 endfun
 nnoremap <silent> <C-]> :call MatchCaseTag()<CR>
 
-" Toggle color highlight on 81st column
-nnoremap <expr> <Leader>8 &cc?':let &cc=0<CR>':':let &cc=81<CR>'
+" Toggle color highlight on 80th character
+highlight OverLength ctermbg=darkgrey ctermfg=white guibg=#292929
+fun! LongLineHighlightInit()
+    if !exists("w:llh")
+        call LongLineHighlightOn()
+    endif
+endfunction
+fun! LongLineHighlightOn()
+    let w:llh = matchadd("OverLength", '\%80v.')
+endfunction
+fun! LongLineHighlightOff()
+    call matchdelete(w:llh)
+    let w:llh = 0
+endfunction
+fun! LongLineHighlightToggle()
+    if !exists("w:llh") || w:llh == 0
+        call LongLineHighlightOn()
+    else
+        call LongLineHighlightOff()
+    endif
+endfunction
+augroup LongLineHighlight
+    autocmd BufWinEnter * call LongLineHighlightInit()
+augroup end
+nnoremap <silent> <Leader>8 :call LongLineHighlightToggle()<CR>
+
 
 " 4. Autocommands -------------------------------------------------------------
 
