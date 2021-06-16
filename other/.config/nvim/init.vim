@@ -677,16 +677,20 @@ endfun
 nnoremap <silent> <C-]> :call MatchCaseTag()<CR>
 
 " Toggle color highlight on 80th character
-highlight OverLength ctermbg=darkgrey ctermfg=white guibg=#292929
+highlight LongLineHighlight ctermbg=darkgrey ctermfg=white guibg=#292929
 
 fun! LongLineHighlightInit()
     if !exists("w:llh")
-        call LongLineHighlightOn()
+        if &filetype ==# 'python'
+            call LongLineHighlightOn()
+        else
+            let w:llh = 0
+        endif
     endif
 endfunction
 
 fun! LongLineHighlightOn()
-    let w:llh = matchadd("OverLength", '\%80v.')
+    let w:llh = matchadd("LongLineHighlight", '\%80v.')
 endfunction
 
 fun! LongLineHighlightOff()
@@ -702,14 +706,14 @@ fun! LongLineHighlightToggle()
     endif
 endfunction
 
-augroup LongLineHighlight
-    autocmd BufWinEnter * call LongLineHighlightInit()
+augroup LongLineHighlightGroup
+    autocmd BufEnter * call LongLineHighlightInit()
 augroup end
 
 nnoremap <silent> <Leader>8 :call LongLineHighlightToggle()<CR>
 
 
-" 4. Autocommands -------------------------------------------------------------
+" 4. Autocommands --------------------------------------------------------------
 
 if has("autocmd")
 
@@ -741,13 +745,6 @@ if has("autocmd")
     autocmd BufNewFile,BufRead *.hql set filetype=sql
     autocmd BufNewFile,BufRead *.md set filetype=markdown
     autocmd BufNewFile,BufRead *.sqli set filetype=sql
-
-    " highlight 81st column only in the current window
-    augroup Col80
-      au!
-      au VimEnter,WinEnter,BufWinEnter * setlocal colorcolumn=81
-      au WinLeave * setlocal colorcolumn=0
-    augroup END
 
     " When vimrc is edited, reload it
     autocmd! bufwritepost init.vim source ~/.config/nvim/init.vim
