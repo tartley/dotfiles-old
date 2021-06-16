@@ -398,12 +398,12 @@ laliases[devicegw]=siab-xenial
 laliases[find]=siab-bionic
 laliases[ident]=siab-bionic
 laliases[publishergw]=siab-xenial
-laliases[revs]=siab-xenial
+laliases[revs]=siab-bionic
 laliases[schemas]=siab-xenial
 laliases[snapdevicegw]=siab-xenial
 laliases[snapfind]=siab-bionic
 laliases[snapident]=siab-bionic
-laliases[snaprevs]=siab-xenial
+laliases[snaprevs]=siab-bionic
 # storage
 laliases[storage]=snapstorage-xenial
 laliases[snapstorage]=snapstorage-xenial
