@@ -19,13 +19,13 @@ function lls {
 declare -A laliases
 # siab container(s)
 laliases[delta]=siab-xenial
-laliases[devicegw]=siab-xenial
+laliases[devicegw]=siab-bionic
 laliases[find]=siab-bionic
 laliases[ident]=siab-bionic
 laliases[publishergw]=siab-xenial
 laliases[revs]=siab-bionic
 laliases[schemas]=siab-xenial
-laliases[snapdevicegw]=siab-xenial
+laliases[snapdevicegw]=siab-bionic
 laliases[snapfind]=siab-bionic
 laliases[snapident]=siab-bionic
 laliases[snaprevs]=siab-bionic
