@@ -377,17 +377,28 @@ fi
 
 ## On exit ##################################################################
 
-# Remove duplicated lines from the history
-# Leave the *last* occurence of duplicates.
-# Does this by reversing the file (tac) before deduping,
-# then reversing it again.
-# Assumes it doesn't have timestamp lines in it.
+# Backup .bash_history
 
-function dedupe_history () {
-    tac < ~/.bash_history | awk '!a[$0]++' | tac >/tmp/deduped \
-        && mv -f /tmp/deduped ~/.bash_history
+function colhist() {
+    history "$@" | colout '^ +(\d+) +([0-9-]+ [0-9:]+)' white,cyan bold,normal
 }
-trap dedupe_history EXIT
+
+function backup_history () {
+    (
+        # make a backup, overwriting other backups from today
+        cd ~/docs/config/bash_history/
+        \cp ~/.bash_history bash_history_$(date +%F)
+        # rm backups older than N days
+        ls -1 . | head -n -10 | xargs rm -f
+    )
+    # Now remove duplicate lines from history file
+    # (using 'tac', to keep the most recent duplicate)
+    # Disabled, because this doesn't work with timestamps in .bash_history
+    # which are required to correctly handle multi-line commands.
+    # tac < ~/.bash_history | awk '!a[$0]++' | tac >/tmp/deduped \
+    #     && mv -f /tmp/deduped ~/.bash_history
+}
+trap backup_history EXIT
 
 
 ## Source all ~/.bashrc.* files. ############################################

@@ -69,9 +69,10 @@ export HISTSIZE=100000 # bash history will save this many commands
 export HISTFILESIZE=${HISTSIZE} # bash will remember this many commands
 export HISTCONTROL=ignoreboth:erasedups # ignore & erase duplicate commands
 export HISTIGNORE="&:bg:fg:exit" # Ignore some controlling instructions
-# Turn this off, so that histfile is a simple sequence of commands,
-# which can then be filtered, dupes removed, etc.
-# export HISTTIMEFORMAT="%y-%m-%d %H:%M:%S " # timestamps
+export HISTTIMEFORMAT="%F %T "
+# Don't turn HISTTIMEFORMAT off - that breaks readline handling of multi-line
+# commands when subsequent sessions read the hist file, since the timestamp
+# comments are used to delimit multi-line commands.
 
 export LESS=-R
 export MAILCHECK
