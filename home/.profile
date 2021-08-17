@@ -112,6 +112,8 @@ export COMP_TAR_INTERNAL_PATHS=1
 
 export CPPFLAGS="-I/usr/local/include"
 
+export PG_COLOR=auto
+
 # Ruby Gems dir
 export GEM_HOME=$HOME/.gems
 
