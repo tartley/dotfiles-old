@@ -125,3 +125,19 @@ function lssh {
 # https://unix.stackexchange.com/questions/250262/how-to-use-bashs-complete-or-compgen-c-command-option/250484#250484
 complete -W "$(lls 2>/dev/null) $(lalias)" lssh lxc
 
+
+function populate-find-sections {
+  curl siab-bionic.lxd:8003/sections?namespace=charm -XPOST -d '[
+    {"name": "ai-ml", "title": "AI/ML", "visible": true},
+    {"name": "logging-tracing", "title": "Logging and Tracing", "visible": true},
+    {"name": "monitoring", "title": "Monitoring", "visible": true},
+    {"name": "networking", "title": "Networking", "visible": true},
+    {"name": "databases", "title": "Databases", "visible": true},
+    {"name": "big-data", "title": "Big Data", "visible": true},
+    {"name": "containers", "title": "Containers", "visible": true},
+    {"name": "security", "title": "Security", "visible": true},
+    {"name": "storage", "title": "Storage", "visible": true},
+    {"name": "cloud", "title": "Cloud", "visible": true}
+  ]'
+}
+
