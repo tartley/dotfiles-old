@@ -3,7 +3,7 @@
 
 " 0. Dev env ideas ------------------------------------------------------------
 
-" check out fugitive plugin (Anthony and David)
+" check out fugitive plugin (Anthony and David recommend)
 
 " check out https://github.com/tpope/vim-rsi
 
@@ -27,11 +27,6 @@
 
 " consider extending comment/uncomment to use a 'comment-leader' variable
 " that is set per filetype.
-
-" I have appended a redraw to Grp/Grp to workaround
-" ':silent' failing to suppress output from grep command.
-" https://github.com/neovim/neovim/issues/3196
-
 
 " 1. Plugins ------------------------------------------------------------------
 " Managed by https://github.com/junegunn/vim-plug
@@ -242,15 +237,33 @@ set formatoptions+=n
 " Make autoformat of numbered lists also handle bullets, using asterisks:
 set formatlistpat=^\\s*[0-9*]\\+[\\]:.)}\\t\ ]\\s*
 
-" long line wrapping
+" -- long line wrapping ----
+
 set wrap
-" wrap at exactly char 80, not at word breaks
-set nolinebreak
+
+function ToggleWrapWords()
+    if &linebreak == 0
+        " wrap at word breaks
+        setlocal linebreak
+        setlocal nolist
+        let &showbreak=""
+    else
+        " wrap at exactly window width
+        setlocal nolinebreak
+        setlocal list
+        let &showbreak="…"
+    endif
+    echo "wrap words" (&linebreak ? "on" : "off")
+endfunction
+
+set linebreak
+silent call ToggleWrapWords()
+
+noremap <Leader>w :call ToggleWrapWords()<CR>
+
+" wrapped lines start with same indent as start of line
 set breakindent
 
-" Display of wrapped lines
-" Implemented using 'let &...' in order to use \u escapes
-let &showbreak="\uab" " start of wrapped lines
 " Display of invisible characters
 " Implemented using 'let &...' in order to use \u escapes
 let &listchars="extends:\ubb,nbsp:\u2423,precedes:\uab,tab:\u25b8-,trail:\ub7"
@@ -263,11 +276,13 @@ set list
 " turn wrap on to see 'showbreak', turn it off to see extends::::::::::::::::::::and precedes (scroll right)
 "
 " Some unicode:
+"   Use 'let &...' instead of 'set ...' to use \u escapes
+"   Or use C-v (which I have mapped to C-q) u XXXX to type chars literally)
 " \uab double <
 " \ub7 middle dot
 " \ubb double >
 " \u2014 a long dash of some sort
-" \u2026 elipsis
+" \u2026 elipsis (or C-q u 2026) …
 " \u2423 underscore with shoulders
 " \u25a1 hollow block
 " \u2588 full block
@@ -382,6 +397,8 @@ noremap <Leader>T :call fzf#vim#tags(expand('<cword>'))<CR>
 " so we have to duplicate things like the preview command.
 
 " Open commonly editable files (eg. not .pyc)
+" find-editable-files is in ~/bin
+" It defines what files to hide from the list
 noremap <silent> <Leader>f :call fzf#run({
 \   'source': 'find-editable-files',
 \   'sink': 'e',
@@ -408,12 +425,9 @@ noremap <ScrollWheelDown> 10<C-e>
 " Refresh window
 " Make it alt-l so that default (ctrl-l) can be used for switching windows
 " Doesn't just refresh window, but also hides search highlights.
-nnoremap <silent> <A-l> :nohlsearch<CR><C-l>
-inoremap <silent> <A-l> <Esc>:nohlsearch<CR><C-l>
-
-" toggle wrapping long lines
-noremap <Leader>w :set wrap!<CR>
-
+" nnoremap <silent> <A-l> :nohlsearch<CR><C-l>
+" inoremap <silent> <A-l> <Esc>:nohlsearch<CR><C-l>
+" 
 " toggle visibility of invisible characters
 nmap <silent> <Leader>s :set list!<CR>
 
@@ -430,17 +444,14 @@ function! MaximizeVertical()
 endfunction
 " call MaximizeVertical()
 
-" single column
-noremap <silent> <Leader><f1> :set columns=84<CR>:only!<CR>:call MaximizeVertical()<CR>
-map! <silent> <Leader><f1> <esc><Leader><f1>a
-" double column
-noremap <silent> <Leader><f2> :set columns=169<CR>:only!<CR>:vsplit<CR>:call MaximizeVertical()<CR>
-map! <silent> <Leader><f2> <esc><Leader><f2>a
-" TRIPLE COLUMN MADNESS!!!
-noremap <silent> <Leader><f3> :set columns=254<CR>:only!<CR>:vsplit<CR>:vsplit<CR>:call MaximizeVertical()<CR>
-map! <silent> <Leader><f3> <esc><Leader><f3>a
+let winwidth=88
 
-set columns=84
+" single column
+noremap <silent> <Leader><f1> :only!<CR>:let &columns=&numberwidth+winwidth<CR>
+" double column
+noremap <silent> <Leader><f2> :only!<CR>:let &columns=&numberwidth*2+winwidth*2+1<CR>:vsplit<CR>
+" TRIPLE COLUMN MADNESS!!!
+noremap <silent> <Leader><f3> :only!<CR>:let &columns=&numberwidth*3+winwidth*3+2<CR>:vsplit<CR>:vsplit<CR>
 
 " show line numbers
 set number
@@ -473,7 +484,6 @@ function! Grp(args)
     " grp is my own Bash wrapper for system grep
     set grepprg=grp\ -n\ $*
     execute "silent! grep! " . a:args
-    redraw!
     botright copen
 endfunction
 
@@ -482,7 +492,6 @@ function! Grpy(args)
     " grpy is my own Bash wrapper for system grep
     set grepprg=grpy\ -n\ $*
     execute "silent! grep! " . a:args
-    redraw!
     botright copen
 endfunction
 
@@ -627,15 +636,19 @@ vnoremap <home> ^
 vnoremap <end> $
 
 " -- toggle autoformatting ----
-" (my group of settings for editing plain text files as opposed to code)
+" My group of settings for editing plain text files as opposed to code.
 
 let g:autoformat = 0
 
 function! ToggleAutoformat()
     if g:autoformat == 0
+        " 'a'utomatically reformat edited paragraphs
         setlocal formatoptions+=a
+        " break lines here as they are typed, at the preceding word end
         setlocal textwidth=80
+        " turn on spellcheck
         setlocal spell spelllang=en_us
+        " turn off number gutte
         setlocal nonumber
         let g:autoformat = 1
     else
@@ -648,8 +661,7 @@ function! ToggleAutoformat()
     echo "autoformat" (g:autoformat ? "on" : "off")
 endfunction
 
-noremap <A-f> :call ToggleAutoformat()<CR>
-noremap <Leader>l :set spell!<CR>
+noremap <Leader>u :call ToggleAutoformat()<CR>
 
 " -- end toggle autoformatting
 
@@ -676,7 +688,7 @@ fun! MatchCaseTag()
 endfun
 nnoremap <silent> <C-]> :call MatchCaseTag()<CR>
 
-" Toggle color highlight on 80th character
+" Toggle color highlight on 88th character
 highlight LongLineHighlight ctermbg=darkgrey ctermfg=white guibg=#292929
 
 fun! LongLineHighlightInit()
@@ -690,7 +702,7 @@ fun! LongLineHighlightInit()
 endfunction
 
 fun! LongLineHighlightOn()
-    let w:llh = matchadd("LongLineHighlight", '\%80v.')
+    let w:llh = matchadd("LongLineHighlight", '\%88v.')
 endfunction
 
 fun! LongLineHighlightOff()
