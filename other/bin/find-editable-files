@@ -17,6 +17,7 @@ find . \
     -name \.pytest_cache -o \
     -name \.testrepository -o \
     -name \.tox -o \
+    -name \.venv -o \
     -name __pycache__ -o \
     -name build -o \
     -name dist -o \
@@ -29,9 +30,4 @@ find . \
   "${extra[@]}" \
   -print \
   2>/dev/null
-
-# removed from the find:
-#
-# Used in IBM Golang projects:
-# -name build -o
 

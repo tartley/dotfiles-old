@@ -20,4 +20,5 @@ grep \
   --exclude-dir=build \
   --exclude-dir=dist \
   --exclude-dir=env \
+  --exclude-dir=.venv \
 
