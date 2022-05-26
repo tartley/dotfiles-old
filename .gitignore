@@ -1,2 +1,3 @@
-backup-generate_symlinks/
+/other/bin/__pycache__/
+/backup-generate_symlinks/
 
