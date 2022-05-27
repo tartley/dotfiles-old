@@ -65,11 +65,12 @@ export PATH
 
 export EDITOR=nis
 
-export HISTSIZE=100000 # bash history will save this many commands
+export HISTSIZE=20000 # bash history will save this many commands
 export HISTFILESIZE=${HISTSIZE} # bash will remember this many commands
 export HISTCONTROL=ignoreboth:erasedups # ignore & erase duplicate commands
-export HISTIGNORE="&:bg:fg:exit" # Ignore some controlling instructions
-export HISTTIMEFORMAT="%F %T "
+export HISTIGNORE="&:bg:fg:exit:ls:ll" # Ignore some commands
+export HISTTIMEFORMAT="%F %T " # Format used in output of history command
+# The history file itself always uses seconds-past-epoch format.
 # Don't turn HISTTIMEFORMAT off - that breaks readline handling of multi-line
 # commands when subsequent sessions read the hist file, since the timestamp
 # comments are used to delimit multi-line commands.

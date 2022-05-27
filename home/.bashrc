@@ -67,7 +67,7 @@ case $- in
 
   # if exit value isn't zero, display it with red background, and a bell
   PROMPT_COMMAND='EXITVAL=$?; '$PROMPT_COMMAND
-  GET_EXITVAL='$(if [[ $EXITVAL != 0 ]]; then echo -ne "\[\e[37;41;01m\] $EXITVAL \[\e[0m\]\07 "; fi)'
+  GET_EXITVAL='$(if [[ $EXITVAL != 0 ]]; then echo -ne "\[\e[37;41;01;5m\] $EXITVAL \[\e[0m\]\07 "; fi)'
   export PS1="$GET_EXITVAL$PS1"
 
   # turn off flow control, mapped to ctrl-s, so that we regain use of that key
@@ -126,6 +126,10 @@ function pytree {
 
 function etime {
     /usr/bin/time -f"%E" "$@"
+}
+
+function beep {
+    paplay /usr/share/sounds/sound-icons/xylofon.wav &
 }
 
 # ctags files
@@ -314,11 +318,6 @@ fi
 
 ## Terminal frippery. ######################################################
 
-# Change terminal window / tab name
-function termname {
-  printf "\e]2;$1\a"
-}
-
 # call given command every second until a key is pressed
 function repeat_until_key () {
     command="$@"
@@ -379,26 +378,31 @@ fi
 
 # Backup .bash_history
 
-function colhist() {
+function historyc() {
     history "$@" | colout '^ +(\d+) +([0-9-]+ [0-9:]+)' white,cyan bold,normal
 }
 
-function backup_history () {
+function history_backup () {
     (
         # make a backup, overwriting other backups from today
         cd ~/docs/config/bash_history/
         \cp ~/.bash_history bash_history_$(date +%F)
         # rm backups older than N days
-        ls -1 . | head -n -10 | xargs rm -f
+        ls -1 . | head -n -100 | xargs rm -f
     )
+}
+trap history_backup EXIT
+
+function history_dedupe () {
     # Now remove duplicate lines from history file
-    # (using 'tac', to keep the most recent duplicate)
-    # Disabled, because this doesn't work with timestamps in .bash_history
-    # which are required to correctly handle multi-line commands.
+    bash-history-dedupe >/tmp/bash_history
+    mv /tmp/bash_history ~/.bash_history
+    # (previous solutions, using 'tac', to keep the most recent duplicate,
+    # then filtering using line-based tools like awk, don't work with
+    # history files containing timestamps or multi-line commands)
     # tac < ~/.bash_history | awk '!a[$0]++' | tac >/tmp/deduped \
     #     && mv -f /tmp/deduped ~/.bash_history
 }
-trap backup_history EXIT
 
 
 ## Source all ~/.bashrc.* files. ############################################
